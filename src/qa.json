@@ -1,0 +1,72 @@
+{
+    "list": [
+       
+        {
+            "question": "什么是Vue?",
+            "keywords": "vue",
+            "answer": [
+                {
+                    "type": "think",
+                    "icon": "",
+                    "title": "问题分解",
+                    "think": "Vue是一个渐进式JavaScript框架，用于构建用户界面。 它基于标准HTML、CSS和JavaScript构建，并提供了一套声明性的、组件化的编程模型，帮助开发者高效地开发用户界面。,",
+                    "content": "##Vue \nVue是一个渐进式JavaScript框架，用于构建用户界面。 它基于标准HTML、CSS和JavaScript构建，并提供了一套声明性的、组件化的编程模型，帮助开发者高效地开发用户界面。"
+                },
+                {
+                    "type": "information",
+                    "title": "知识库搜索",
+                    "source": [
+                        {
+                            "title": "Vue.js",
+                            "description": "Vue.js是一个渐进式JavaScript框架，用于构建用户界面。",
+                            "keywords": "vue, javascript, framework",
+                            "correctness": "100%"
+                        },
+                        {
+                            "title": "Vue.js",
+                            "description": "Vue.js是一个渐进式JavaScript框架，用于构建用户界面。",
+                            "keywords": "vue, javascript, framework",
+                            "correctness": "100%"
+                        }
+                    ]
+                },
+                {
+                    "type": "check",
+                    "title": "问题验证",
+                    "think": "Vue是一个渐进式JavaScript框架，用于构建用户界面。 它基于标准HTML、CSS和JavaScript构建，并提供了一套声明性的、组件化的编程模型，帮助开发者高效地开发用户界面。",
+                    "content": "Vue是一个渐进式JavaScript框架，用于构建用户界面。 它基于标准HTML、CSS和JavaScript构建，并提供了一套声明性的、组件化的编程模型，帮助开发者高效地开发用户界面。",
+                    "footer": {
+                        "type": "confirm",
+                        "title": "问题确认",
+                        "content": "Vue是一个渐进式JavaScript框架，用于构建用户界面。 ",
+                        "confirm": "确认搜索"
+                    }
+                },
+                {
+                    "type": "answer",
+                    "title": "问题回答",
+                    "think": "Vue是一个渐进式JavaScript框架，用于构建用户界面。 它基于标准HTML、CSS和JavaScript构建，并提供了一套声明性的、组件化的编程模型，帮助开发者高效地开发用户界面。",
+                    "content": "Vue是一个渐进式JavaScript框架，用于构建用户界面。 它基于标准HTML、CSS和JavaScript构建，并提供了一套声明性的、组件化的编程模型，帮助开发者高效地开发用户界面。"
+                },
+                {
+                    "type": "reference",
+                    "title": "问题参考",
+                    "source": [
+                        {
+                            "title": "Vue.js",
+                            "description": "Vue.js是一个渐进式JavaScript框架，用于构建用户界面。",
+                            "keywords": "vue, javascript, framework",
+                            "correctness": "100%"
+                        },
+                        {
+                            "title": "Vue.js",
+                            "description": "Vue.js是一个渐进式JavaScript框架，用于构建用户界面。",
+                            "keywords": "vue, javascript, framework",
+                            "correctness": "100%"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

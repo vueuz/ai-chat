@@ -1,0 +1,24 @@
+{
+  "name": "playground-independent",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "ant-design-vue": ">=4.0.0",
+    "ant-design-x-vue": "1.2.5",
+    "markdown-it": "^14.1.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1.4",
+    "@vitejs/plugin-vue-jsx": "^4.0.1",
+    "typescript": "~5.8.0",
+    "unplugin-vue-macros": "^2.14.5",
+    "vite": "^6.2.0",
+    "vue-tsc": "^2.1.6"
+  }
+}
