@@ -130,8 +130,7 @@ const md = markdownit()
 // 创建一个渲染markdown内容的函数
 const renderMarkdown: BubbleProps['messageRender'] = (content) => {
   console.log("renderMarkdown", content);
-  
- 
+   
   
   return h(Typography, null, {
     default: () => h('div', {
@@ -529,7 +528,7 @@ const items = computed<BubbleListProps['items']>(() => {
       <div :style="styles.logo">
         <img :src="logo"
           draggable="false" alt="logo" :style="styles['logo-img']">
-        <span :style="styles['logo-span']">​​IPS-S1 安监系统​</span>
+        <span :style="styles['logo-span']">​电力AI 安监系统​</span>
       </div>
 
       <!-- 🌟 添加会话 -->
