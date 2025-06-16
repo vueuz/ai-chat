@@ -12,8 +12,9 @@ import {
   ReadOutlined,
   ShareAltOutlined,
   SmileOutlined,
+  UserOutlined,
 } from '@ant-design/icons-vue'
-import { Badge, Button, Flex, Space, Typography, theme } from 'ant-design-vue'
+import { Badge, Button, Flex, Space, Typography, theme, Avatar } from 'ant-design-vue'
 import {
   Attachments,
   Bubble,
@@ -60,7 +61,7 @@ const styles = computed(() => {
     'chat': {
       'height': '100%',
       'width': '100%',
-      'max-width': '700px',
+
       'margin': '0 auto',
       'box-sizing': 'border-box',
       'display': 'flex',
@@ -107,6 +108,24 @@ const styles = computed(() => {
       width: 'calc(100% - 24px)',
       margin: '0 12px 24px 12px',
     },
+    'header': {
+      'display': 'flex',
+
+      'justify-content': 'space-between',
+      'align-items': 'center',
+      'padding': `0 24px`,
+      'height': '64px',
+      'border-bottom': `1px solid ${token.value.colorBorderSecondary}`,
+    },
+    'header-links': {
+      'display': 'flex',
+      'gap': '16px',
+    },
+    'user-info': {
+      'display': 'flex',
+      'align-items': 'center',
+      'gap': '18px',
+    },
   } as const
 })
 
@@ -130,9 +149,9 @@ const md = markdownit()
 // 创建一个渲染markdown内容的函数
 const renderMarkdown: BubbleProps['messageRender'] = (content) => {
   console.log("renderMarkdown", content);
-  
- 
-  
+
+
+
   return h(Typography, null, {
     default: () => h('div', {
       class: 'markdown-content',
@@ -153,7 +172,7 @@ function renderTitle(icon: VNode, title: string) {
 
 const renderCard: BubbleProps['messageRender'] = (source) => {
   const items = (Array.isArray(source) ? source : [source])
-    .flatMap(item => 
+    .flatMap(item =>
       (item.source || [item])
         .filter(content => content.title) // 过滤有效内容
         .map(content => ({
@@ -494,7 +513,7 @@ const items = computed<BubbleListProps['items']>(() => {
         key: id,
         role: status,
         content: message,
-       
+
       }
     } else {
       return {
@@ -503,13 +522,13 @@ const items = computed<BubbleListProps['items']>(() => {
         messageRender: () => h(ThoughtChain, {
           items: [
             ...currentAnswer.value.map((item) => {
-              
+
               return {
                 title: item.title,
                 content: customRender(item),
                 description: item.description,
-                
-                
+
+
               }
             }),
           ],
@@ -544,6 +563,22 @@ const items = computed<BubbleListProps['items']>(() => {
     </div>
 
     <div :style="styles.chat">
+      <!-- 🌟 顶部导航栏 -->
+      <div :style="styles.header">
+        <div :style="styles['header-links']">
+          <Button type="link">D7000智能感知平台​</Button>
+          <Button type="link">OMS-IPS工单智能管控平台</Button>
+          <Button type="link">电网哨兵</Button>
+        </div>
+        <div :style="styles['user-info']">
+          <Avatar style="background-color: #87d068">
+            <template #icon>
+              <UserOutlined />
+            </template>
+          </Avatar>
+          <span>王凯</span>
+        </div>
+      </div>
       <!-- 🌟 消息列表 -->
       <Bubble.List :items="items" :roles="roles" :style="styles.messages" :MessageRender="messageRender" />
 
