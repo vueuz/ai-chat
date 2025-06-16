@@ -14,7 +14,7 @@ import {
   SmileOutlined,
   UserOutlined,
 } from '@ant-design/icons-vue'
-import { Badge, Button, Flex, Space, Typography, theme, Avatar } from 'ant-design-vue'
+import { Badge, Button, Flex, Space, Typography, theme, Avatar, Watermark } from 'ant-design-vue'
 import {
   Attachments,
   Bubble,
@@ -470,7 +470,6 @@ const placeholderNode = computed(() => h(
         icon: "https://mdn.alipayobjects.com/huamei_iwk9zp/afts/img/A*s5sNRo5LjfQAAAAAAAAAAAAADgCCAQ/fmt.webp",
         title: "你好，我是小安",
         description: "毫秒级捕捉工业电压闪变，15分钟定位故障根源，护航关键生产线零中断。",
-        extra: h(Space, {}, () => [h(Button, { icon: h(ShareAltOutlined) }), h(Button, { icon: h(EllipsisOutlined) })]),
       }
     ),
     h(
@@ -542,7 +541,9 @@ const items = computed<BubbleListProps['items']>(() => {
 </script>
 
 <template>
+<Watermark :content="['中电金信-王凯(wangkai)','66.5.70.94-系统资源管理/南天信息']" >
   <div :style="styles.layout">
+
     <div :style="styles.menu">
       <!-- 🌟 Logo -->
       <div :style="styles.logo">
@@ -622,5 +623,7 @@ const items = computed<BubbleListProps['items']>(() => {
         </template>
       </Sender>
     </div>
+
   </div>
+  </Watermark>
 </template>
