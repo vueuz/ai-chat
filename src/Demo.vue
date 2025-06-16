@@ -13,8 +13,13 @@ import {
   ShareAltOutlined,
   SmileOutlined,
   UserOutlined,
+  BookOutlined,
+  SettingOutlined,
+  CloudOutlined,
+  HistoryOutlined,
+  AuditOutlined,
 } from '@ant-design/icons-vue'
-import { Badge, Button, Flex, Space, Typography, theme, Avatar, Watermark } from 'ant-design-vue'
+import { Badge, Button, Flex, Space, Typography, theme, Avatar, Watermark, Menu } from 'ant-design-vue'
 import {
   Attachments,
   Bubble,
@@ -46,7 +51,7 @@ const styles = computed(() => {
       'font-family': `AlibabaPuHuiTi, ${token.value.fontFamily}, sans-serif`,
     },
     'menu': {
-      'background': `${token.value.colorBgLayout}80`,
+      'border-right': `1px solid ${token.value.colorBorder}`,
       'width': '280px',
       'height': '100%',
       'display': 'flex',
@@ -56,12 +61,10 @@ const styles = computed(() => {
       'padding': '0 12px',
       'flex': 1,
       'overflow-y': 'hidden',
-
     },
     'chat': {
       'height': '100%',
       'width': '100%',
-
       'margin': '0 auto',
       'box-sizing': 'border-box',
       'display': 'flex',
@@ -110,12 +113,11 @@ const styles = computed(() => {
     },
     'header': {
       'display': 'flex',
-
       'justify-content': 'space-between',
       'align-items': 'center',
       'padding': `0 24px`,
-      'height': '64px',
-      'border-bottom': `1px solid ${token.value.colorBorderSecondary}`,
+      'height': '54px',
+      'border-bottom': `1px solid ${token.value.colorBorder}`,
     },
     'header-links': {
       'display': 'flex',
@@ -144,6 +146,30 @@ const getAnswer = (question: string) => {
     return qaItem.answer
   }
 }
+
+const menuItems = ref([
+  {
+    label: '知识库',
+    key: 'new',
+    icon: h(BookOutlined),
+  },
+  {
+    label: '案例库',
+    key: 'case',
+    icon: h(AuditOutlined),
+  },
+
+  {
+    label: '设置',
+    key: 'setting',
+    icon: h(SettingOutlined),
+  },
+  {
+    label: '历史对话',
+    key: 'history',
+    icon: h(HistoryOutlined),
+  },
+])
 
 const md = markdownit()
 // 创建一个渲染markdown内容的函数
@@ -323,6 +349,24 @@ const placeholderPromptsItems: PromptsProps['items'] = [
       },
     ],
   },
+  {
+    key: '3',
+    label: renderTitle(h(SettingOutlined, { style: { color: '#52C41A' } }), '解决方案'),
+    description: '提供解决方案',
+    children: [
+      {
+        key: '3-1',
+        icon: h(HeartOutlined),
+        description: `更换变压器`,
+      },
+      {
+        key: '3-2',
+        icon: h(SmileOutlined),
+        description: `联系专业维修人员`,
+      },
+    ],
+  },
+  
 ]
 
 
@@ -557,6 +601,8 @@ const items = computed<BubbleListProps['items']>(() => {
         <PlusOutlined />
         新对话
       </Button>
+
+      <Menu :style="styles['menu-right']" :items="menuItems" />
 
       <!-- 🌟 会话管理 -->
       <Conversations :items="conversationsItems" :style="styles.conversations" :active-key="activeKey"
