@@ -584,7 +584,7 @@ const items = computed<BubbleListProps['items']>(() => {
 </script>
 
 <template>
-<Watermark :content="['中电金信-王凯(wangkai)','66.5.70.94-系统资源管理/南天信息']" >
+<Watermark :content="['国网华东-王凯(wangkai)','66.5.70.94-电力AI监控/南天信息']" >
   <div :style="styles.layout">
 
     <div :style="styles.menu">
@@ -612,9 +612,11 @@ const items = computed<BubbleListProps['items']>(() => {
       <!-- 🌟 顶部导航栏 -->
       <div :style="styles.header">
         <div :style="styles['header-links']">
-          <Button type="link">D7000智能感知平台​</Button>
-          <Button type="link">OMS-IPS工单智能管控平台</Button>
-          <Button type="link">电网哨兵</Button>
+          <Button type="link">工单智能管控平台</Button>
+          <Button type="link">线路无人巡检系统</Button>
+          <Button type="link">自动化调度系统</Button>
+          <Button type="link">华东网安全势感知系统</Button>
+
         </div>
         <div :style="styles['user-info']">
           <Avatar style="background-color: #87d068">
