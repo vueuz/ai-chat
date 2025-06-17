@@ -65,6 +65,8 @@ import { useRouter } from 'vue-router';
 const { token } = theme.useToken()
 const router = useRouter();
 
+const selectedKeys = ref<string[]>([]);
+
 const styles = computed(() => {
   return {
     layout: {
@@ -164,7 +166,7 @@ const menuItems = ref([
   },
   {
     label: '设置',
-    key: 'setting',
+    key: 'settings',
     icon: h(SettingOutlined),
   },
   {
@@ -178,17 +180,18 @@ watch(activeKey, (newKey) => {
   if (newKey !== undefined) {
     // Navigate to chat page with conversation id
     router.push({ path: `/chat/${newKey}` });
+    selectedKeys.value = [newKey];
   }
 }, { immediate: true })
 
 const onMenuItemClick = ({ key }: { key: string }) => {
+  selectedKeys.value = [key];
   if (key === 'knowledge') {
     router.push('/knowledge');
   } else if (key === 'case') {
     router.push('/case');
-  } else if (key === 'setting') {
-    // router.push('/setting'); // Placeholder for future setting page
-    console.log('Navigate to setting page');
+  } else if (key === 'settings') {
+    router.push('/settings');
   } else if (key === 'history') {
     // router.push('/history'); // Placeholder for future history page
     console.log('Navigate to history page');
