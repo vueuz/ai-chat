@@ -14,7 +14,7 @@
           新对话
         </Button>
 
-        <Menu :style="styles['menu-right']" :items="menuItems" />
+        <Menu :style="styles['menu-right']" :items="menuItems" @click="onMenuItemClick" :selected-keys="selectedKeys" />
 
         <!-- 🌟 会话管理 -->
         <Conversations :items="conversationsItems" :style="styles.conversations" :active-key="activeKey"
@@ -177,12 +177,28 @@ const menuItems = ref([
 watch(activeKey, (newKey) => {
   if (newKey !== undefined) {
     // Navigate to chat page with conversation id
-    // This assumes your chat page route is named 'chat' and accepts a param 'id'
-    // router.push({ name: 'chat', params: { id: newKey } });
-    // For now, just log, will integrate with chat page later
-    console.log('Active conversation changed to:', newKey);
+    router.push({ path: `/chat/${newKey}` });
   }
 }, { immediate: true })
+
+const onMenuItemClick = ({ key }: { key: string }) => {
+  
+  if (key === 'knowledge') {
+    router.push('/knowledge');
+  } else if (key === 'case') {
+    // router.push('/case'); // Placeholder for future case page
+    console.log('Navigate to case page');
+  } else if (key === 'setting') {
+    // router.push('/setting'); // Placeholder for future setting page
+    console.log('Navigate to setting page');
+  } else if (key === 'history') {
+    // router.push('/history'); // Placeholder for future history page
+    console.log('Navigate to history page');
+  } else {
+    // For new conversation, navigate to chat page with the new key
+    router.push({ path: `/chat/${key}` });
+  }
+};
 
 function onAddConversation() {
   const newKey = `${conversationsItems.value.length}`;
@@ -194,10 +210,12 @@ function onAddConversation() {
     },
   ]
   activeKey.value = newKey;
+  router.push({ path: `/chat/${newKey}` }); // Navigate to the new chat
 }
 
 const onConversationClick: ConversationsProps['onActiveChange'] = (key) => {
   activeKey.value = key
+  router.push({ path: `/chat/${key}` }); // Navigate to the selected chat
 }
 
 </script>

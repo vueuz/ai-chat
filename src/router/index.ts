@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import BasicLayout from '../layouts/BasicLayout.vue'
 import ChatPage from '../views/ChatPage.vue'
+import KnowledgeBasePage from '../views/KnowledgeBasePage.vue'
 
 const routes = [
   {
@@ -16,15 +17,13 @@ const routes = [
         path: 'chat/:id',
         name: 'chat',
         component: ChatPage,
-        props: true, // Pass route params as props to ChatPage
+        props: true,
       },
-      // You can add other routes here that use BasicLayout
-      // For example, a settings page:
-      // {
-      //   path: 'settings',
-      //   name: 'settings',
-      //   component: () => import('../views/SettingsPage.vue') // Lazy load settings page
-      // },
+      {
+        path: 'knowledge',
+        name: 'knowledge',
+        component: KnowledgeBasePage,
+      },
     ],
   },
   // Add other top-level routes if needed (e.g., for a login page without BasicLayout)
