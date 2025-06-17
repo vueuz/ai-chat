@@ -373,7 +373,7 @@ const placeholderPromptsItems: PromptsProps['items'] = [
 const roles: BubbleListProps['roles'] = {
   ai: {
     placement: 'start',
-    typing: { step: 5, interval: 20 },
+    typing: { step: 5, interval: 400 },
     styles: {
       content: {
         borderRadius: '16px',
@@ -450,7 +450,7 @@ const [agent] = useXAgent({
           clearInterval(typingId)
           processNextItem() // 关键修改：当前流程完成后触发下一个流程
         }
-      }, 20)
+      }, 100)
     }
 
     // 初始化时直接触发第一个流程
