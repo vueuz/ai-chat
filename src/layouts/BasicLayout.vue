@@ -182,12 +182,10 @@ watch(activeKey, (newKey) => {
 }, { immediate: true })
 
 const onMenuItemClick = ({ key }: { key: string }) => {
-  
   if (key === 'knowledge') {
     router.push('/knowledge');
   } else if (key === 'case') {
-    // router.push('/case'); // Placeholder for future case page
-    console.log('Navigate to case page');
+    router.push('/case');
   } else if (key === 'setting') {
     // router.push('/setting'); // Placeholder for future setting page
     console.log('Navigate to setting page');
