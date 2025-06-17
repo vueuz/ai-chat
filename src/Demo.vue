@@ -12,8 +12,14 @@ import {
   ReadOutlined,
   ShareAltOutlined,
   SmileOutlined,
+  UserOutlined,
+  BookOutlined,
+  SettingOutlined,
+  CloudOutlined,
+  HistoryOutlined,
+  AuditOutlined,
 } from '@ant-design/icons-vue'
-import { Badge, Button, Flex, Space, Typography, theme } from 'ant-design-vue'
+import { Badge, Button, Flex, Space, Typography, theme, Avatar, Watermark, Menu } from 'ant-design-vue'
 import {
   Attachments,
   Bubble,
@@ -45,7 +51,7 @@ const styles = computed(() => {
       'font-family': `AlibabaPuHuiTi, ${token.value.fontFamily}, sans-serif`,
     },
     'menu': {
-      'background': `${token.value.colorBgLayout}80`,
+      'border-right': `1px solid ${token.value.colorBorder}`,
       'width': '280px',
       'height': '100%',
       'display': 'flex',
@@ -55,12 +61,10 @@ const styles = computed(() => {
       'padding': '0 12px',
       'flex': 1,
       'overflow-y': 'hidden',
-
     },
     'chat': {
       'height': '100%',
       'width': '100%',
-      'max-width': '700px',
       'margin': '0 auto',
       'box-sizing': 'border-box',
       'display': 'flex',
@@ -107,6 +111,23 @@ const styles = computed(() => {
       width: 'calc(100% - 24px)',
       margin: '0 12px 24px 12px',
     },
+    'header': {
+      'display': 'flex',
+      'justify-content': 'space-between',
+      'align-items': 'center',
+      'padding': `0 24px`,
+      'height': '54px',
+      'border-bottom': `1px solid ${token.value.colorBorder}`,
+    },
+    'header-links': {
+      'display': 'flex',
+      'gap': '16px',
+    },
+    'user-info': {
+      'display': 'flex',
+      'align-items': 'center',
+      'gap': '18px',
+    },
   } as const
 })
 
@@ -125,6 +146,30 @@ const getAnswer = (question: string) => {
     return qaItem.answer
   }
 }
+
+const menuItems = ref([
+  {
+    label: '知识库',
+    key: 'new',
+    icon: h(BookOutlined),
+  },
+  {
+    label: '案例库',
+    key: 'case',
+    icon: h(AuditOutlined),
+  },
+
+  {
+    label: '设置',
+    key: 'setting',
+    icon: h(SettingOutlined),
+  },
+  {
+    label: '历史对话',
+    key: 'history',
+    icon: h(HistoryOutlined),
+  },
+])
 
 const md = markdownit()
 // 创建一个渲染markdown内容的函数
@@ -152,7 +197,7 @@ function renderTitle(icon: VNode, title: string) {
 
 const renderCard: BubbleProps['messageRender'] = (source) => {
   const items = (Array.isArray(source) ? source : [source])
-    .flatMap(item => 
+    .flatMap(item =>
       (item.source || [item])
         .filter(content => content.title) // 过滤有效内容
         .map(content => ({
@@ -303,6 +348,24 @@ const placeholderPromptsItems: PromptsProps['items'] = [
       },
     ],
   },
+  {
+    key: '3',
+    label: renderTitle(h(SettingOutlined, { style: { color: '#52C41A' } }), '解决方案'),
+    description: '提供解决方案',
+    children: [
+      {
+        key: '3-1',
+        icon: h(HeartOutlined),
+        description: `更换变压器`,
+      },
+      {
+        key: '3-2',
+        icon: h(SmileOutlined),
+        description: `联系专业维修人员`,
+      },
+    ],
+  },
+  
 ]
 
 
@@ -450,7 +513,6 @@ const placeholderNode = computed(() => h(
         icon: "https://mdn.alipayobjects.com/huamei_iwk9zp/afts/img/A*s5sNRo5LjfQAAAAAAAAAAAAADgCCAQ/fmt.webp",
         title: "你好，我是小安",
         description: "毫秒级捕捉工业电压闪变，15分钟定位故障根源，护航关键生产线零中断。",
-        extra: h(Space, {}, () => [h(Button, { icon: h(ShareAltOutlined) }), h(Button, { icon: h(EllipsisOutlined) })]),
       }
     ),
     h(
@@ -493,7 +555,7 @@ const items = computed<BubbleListProps['items']>(() => {
         key: id,
         role: status,
         content: message,
-       
+
       }
     } else {
       return {
@@ -502,13 +564,13 @@ const items = computed<BubbleListProps['items']>(() => {
         messageRender: () => h(ThoughtChain, {
           items: [
             ...currentAnswer.value.map((item) => {
-              
+
               return {
                 title: item.title,
                 content: customRender(item),
                 description: item.description,
-                
-                
+
+
               }
             }),
           ],
@@ -522,7 +584,9 @@ const items = computed<BubbleListProps['items']>(() => {
 </script>
 
 <template>
+<Watermark :content="['中电金信-王凯(wangkai)','66.5.70.94-系统资源管理/南天信息']" >
   <div :style="styles.layout">
+
     <div :style="styles.menu">
       <!-- 🌟 Logo -->
       <div :style="styles.logo">
@@ -537,12 +601,30 @@ const items = computed<BubbleListProps['items']>(() => {
         新对话
       </Button>
 
+      <Menu :style="styles['menu-right']" :items="menuItems" />
+
       <!-- 🌟 会话管理 -->
       <Conversations :items="conversationsItems" :style="styles.conversations" :active-key="activeKey"
         @active-change="onConversationClick" />
     </div>
 
     <div :style="styles.chat">
+      <!-- 🌟 顶部导航栏 -->
+      <div :style="styles.header">
+        <div :style="styles['header-links']">
+          <Button type="link">D7000智能感知平台​</Button>
+          <Button type="link">OMS-IPS工单智能管控平台</Button>
+          <Button type="link">电网哨兵</Button>
+        </div>
+        <div :style="styles['user-info']">
+          <Avatar style="background-color: #87d068">
+            <template #icon>
+              <UserOutlined />
+            </template>
+          </Avatar>
+          <span>王凯</span>
+        </div>
+      </div>
       <!-- 🌟 消息列表 -->
       <Bubble.List :items="items" :roles="roles" :style="styles.messages" :MessageRender="messageRender" />
 
@@ -586,5 +668,7 @@ const items = computed<BubbleListProps['items']>(() => {
         </template>
       </Sender>
     </div>
+
   </div>
+  </Watermark>
 </template>
