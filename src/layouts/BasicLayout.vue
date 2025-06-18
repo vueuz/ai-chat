@@ -25,10 +25,10 @@
         <!-- 🌟 顶部导航栏 -->
         <div :style="styles.header">
           <div :style="styles['header-links']">
-            <Button type="link">工单智能管控平台</Button>
-            <Button type="link">线路无人巡检系统</Button>
-            <Button type="link">自动化调度系统</Button>
-            <Button type="link">华东网安全势感知系统</Button>
+            <Button type="text" :icon="h(ProfileOutlined)">工单智能管控平台</Button>
+          <Button type="text" :icon="h(NodeExpandOutlined)">线路无人巡检系统</Button>
+          <Button type="text" :icon="h(DeploymentUnitOutlined)">自动化调度系统</Button>
+          <Button type="text" :icon="h(AimOutlined)">华东网安全势感知系统</Button>
           </div>
           <div :style="styles['user-info']">
             <Avatar style="background-color: #87d068">
@@ -55,6 +55,10 @@ import {
   SettingOutlined,
   HistoryOutlined,
   AuditOutlined,
+  ProfileOutlined,
+  NodeExpandOutlined,
+  DeploymentUnitOutlined,
+  AimOutlined,
 } from '@ant-design/icons-vue'
 import { Button, Menu, Avatar, Watermark, theme } from 'ant-design-vue'
 import { Conversations } from 'ant-design-x-vue'
