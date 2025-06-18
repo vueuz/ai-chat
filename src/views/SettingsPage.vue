@@ -49,8 +49,8 @@
 import { reactive } from 'vue';
 
 const accountForm = reactive({
-  username: 'TestUser',
-  email: 'test@example.com',
+  username: 'wangkai',
+  email: 'wangkai@nantian.com',
 });
 
 const themeForm = reactive({

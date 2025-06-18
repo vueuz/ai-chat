@@ -7,6 +7,10 @@
         style="margin-bottom: 16px"
         @search="onSearch"
       />
+      <!-- 新增知识库按钮 -->
+      <a-button type="primary" style="width: 100%; margin-bottom: 16px;" @click="showModal">
+        新增知识库
+      </a-button>
       <a-menu
         v-model:selectedKeys="selectedKeys"
         mode="inline"
@@ -23,15 +27,89 @@
       </div>
       <a-empty v-else description="请选择一个知识条目查看详情" />
     </div>
+
+    <!-- 新增知识库弹窗 -->
+    <a-modal
+      v-model:open="isModalVisible"
+      title="新增知识库"
+      okText="确定"
+      cancelText="取消"
+      @ok="handleOk"
+      @cancel="handleCancel"
+      :width="600"
+    >
+      <a-form
+        :model="uploadFormState"
+        name="uploadForm"
+        :label-col="{ span: 6 }"
+        :wrapper-col="{ span: 18 }"
+        autocomplete="off"
+      >
+      <a-form-item
+          label="标题"
+          name="title"
+          :rules="[{ required: true, message: '请输入知识库标题!' }]"
+        >
+          <a-input v-model:value="formState.title" />
+        </a-form-item>
+        <a-form-item
+          label="描述"
+          name="description"
+          :rules="[{ required: true, message: '请输入知识库描述!' }]"
+        >
+          <a-textarea v-model:value="formState.description" :rows="4" />
+        </a-form-item>
+        <a-form-item
+          label="上传文件"
+          name="fileList"
+          :rules="[{ required: true, message: '请选择要上传的文件!' }]"
+        >
+        <a-upload-dragger
+    v-model:fileList="fileList"
+    name="file"
+    :multiple="true"
+    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+    @change="handleChange"
+    @drop="handleDrop"
+  >
+    <p class="ant-upload-drag-icon">
+      <inbox-outlined></inbox-outlined>
+    </p>
+    <p class="ant-upload-text">点击或拖拽文件到此来添加文件</p>
+    <p class="ant-upload-hint">
+      支持单个或批量上传，支持docx、pdf、xls等格式。
+    </p>
+  </a-upload-dragger>
+        </a-form-item>
+
+        <a-form-item
+          label="文本切片方式"
+          name="sliceMethod"
+          :rules="[{ required: true, message: '请选择文本切片方式!' }]"
+        >
+          <a-select v-model:value="uploadFormState.sliceMethod" placeholder="请选择">
+            <a-select-option value="auto">自动</a-select-option>
+            <a-select-option value="paragraph">按段落</a-select-option>
+            <a-select-option value="sentence">按句子</a-select-option>
+          </a-select>
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, h } from 'vue';
-import { theme, Menu as AMenu, InputSearch as AInputSearch, TypographyTitle as ATypographyTitle, TypographyParagraph as ATypographyParagraph, Empty as AEmpty, Divider as ADivider } from 'ant-design-vue';
-import { BookOutlined, FileTextOutlined } from '@ant-design/icons-vue';
+import { ref, computed, h, reactive } from 'vue';
+import { theme, Menu as AMenu, InputSearch as AInputSearch, TypographyTitle as ATypographyTitle, TypographyParagraph as ATypographyParagraph, Empty as AEmpty, Divider as ADivider, Button as AButton, Modal as AModal, Form as AForm, Upload as AUpload, Select as ASelect } from 'ant-design-vue';
+import { BookOutlined, FileTextOutlined, UploadOutlined } from '@ant-design/icons-vue';
+import type { UploadChangeParam } from 'ant-design-vue/es/upload';
 
 const { token } = theme.useToken();
+const formState = reactive({
+  title: '',
+  description: '',
+  fullContent: '',
+});
 
 const styles = computed(() => ({
   container: {
@@ -165,6 +243,48 @@ const onSearch = (value: string) => {
 
 const onMenuItemClick = ({ key }: { key: string }) => {
   selectedKeys.value = [key];
+};
+
+const isModalVisible = ref(false);
+
+const uploadFormState = reactive({
+  fileList: [],
+  sliceMethod: undefined,
+});
+
+const showModal = () => {
+  isModalVisible.value = true;
+  // Reset form state when opening modal
+  uploadFormState.fileList = [];
+  uploadFormState.sliceMethod = undefined;
+};
+
+const handleOk = () => {
+  // Here you would handle the file upload and slice method selection
+  console.log('Files to upload:', uploadFormState.fileList);
+  console.log('Slice method:', uploadFormState.sliceMethod);
+
+  // Example: You would typically send these to a backend API
+  // axios.post('/api/upload-knowledge', uploadFormState)
+  //   .then(response => { /* handle success */ })
+  //   .catch(error => { /* handle error */ });
+
+  // Close the modal after handling
+  isModalVisible.value = false;
+};
+
+const handleCancel = () => {
+  isModalVisible.value = false;
+};
+
+const handleUploadChange = (info: UploadChangeParam) => {
+  if (info.file.status === 'done') {
+    console.log(`${info.file.name} file uploaded successfully`);
+    // You might want to do something after upload success, like showing a message
+  } else if (info.file.status === 'error') {
+    console.error(`${info.file.name} file upload failed.`);
+    // Handle upload error
+  }
 };
 
 // Set initial selected item if desired

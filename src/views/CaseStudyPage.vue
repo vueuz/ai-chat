@@ -4,8 +4,7 @@
       <a-col v-for="item in caseStudies" :key="item.id" :xs="24" :sm="12" :md="8" :lg="6">
         <a-card hoverable :style="styles.card">
           <template #cover>
-            <img v-if="item.image" :alt="item.title" :src="item.image" :style="styles.cardImage" />
-            <div v-else :style="styles.cardPlaceholder">{{ item.title.charAt(0) }}</div>
+           
           </template>
           <a-card-meta :title="item.title" :description="item.description">
             <template #avatar>
@@ -14,14 +13,14 @@
             </template>
           </a-card-meta>
           <template #actions>
-            <a-tooltip title="点赞">
-              <HeartOutlined key="heart" />
+            <a-tooltip title="添加至知识库">
+              <SaveOutlined  key="heart" />
             </a-tooltip>
             <a-tooltip title="分享">
-              <ShareAltOutlined key="share" />
+              <EditOutlined />
             </a-tooltip>
             <a-tooltip title="更多">
-              <EllipsisOutlined key="ellipsis" />
+              <DeleteOutlined />
             </a-tooltip>
           </template>
         </a-card>
@@ -33,7 +32,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { theme, Card as ACard, Row as ARow, Col as ACol, Avatar as AAvatar, Tooltip as ATooltip } from 'ant-design-vue';
-import { HeartOutlined, ShareAltOutlined, EllipsisOutlined } from '@ant-design/icons-vue';
+import { SaveOutlined, DeleteOutlined,EditOutlined } from '@ant-design/icons-vue';
 
 const { token } = theme.useToken();
 
