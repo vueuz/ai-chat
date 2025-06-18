@@ -11,7 +11,8 @@
   "dependencies": {
     "ant-design-vue": ">=4.0.0",
     "ant-design-x-vue": "1.2.5",
-    "markdown-it": "^14.1.0"
+    "markdown-it": "^14.1.0",
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.4",
