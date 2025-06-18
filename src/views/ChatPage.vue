@@ -1,50 +1,5 @@
-<template>
-  <div :style="styles.chat">
-    <!-- 🌟 消息列表 -->
-    <Bubble.List :items="items" :roles="roles" :style="styles.messages" />
-
-    <!-- 🌟 输入框 -->
-    <Sender :value="content" :style="styles.sender" :loading="agentRequestLoading" @submit="onSubmit"
-      @change="value => content = value">
-      <template #prefix>
-        <Badge :dot="attachedFiles.length > 0 && !headerOpen">
-          <Button type="text" @click="() => headerOpen = !headerOpen">
-            <template #icon>
-              <PaperClipOutlined />
-            </template>
-          </Button>
-        </Badge>
-      </template>
-
-      <template #header>
-        <Sender.Header title="Attachments" :open="headerOpen" :styles="{ content: { padding: 0 } }"
-          @open-change="open => headerOpen = open">
-          <Attachments :before-upload="() => false" :items="attachedFiles" @change="handleFileChange">
-            <template #placeholder="type">
-              <Flex v-if="type && type.type === 'inline'" align="center" justify="center" vertical gap="2">
-                <Typography.Text style="font-size: 30px; line-height: 1;">
-                  <CloudUploadOutlined />
-                </Typography.Text>
-                <Typography.Title :level="5" style="margin: 0; font-size: 14px; line-height: 1.5;">
-                  Upload files
-                </Typography.Title>
-                <Typography.Text type="secondary">
-                  Click or drag files to this area to upload
-                </Typography.Text>
-              </Flex>
-              <Typography.Text v-if="type && type.type === 'drop'">
-                Drop file here
-              </Typography.Text>
-            </template>
-          </Attachments>
-        </Sender.Header>
-      </template>
-    </Sender>
-  </div>
-</template>
-
 <script setup lang="ts">
-import type { AttachmentsProps, BubbleListProps, BubbleProps, PromptsProps } from 'ant-design-x-vue'
+import type { AttachmentsProps, BubbleListProps, BubbleProps, ConversationsProps, PromptsProps } from 'ant-design-x-vue'
 import type { VNode } from 'vue'
 import {
   CloudUploadOutlined,
@@ -53,59 +8,151 @@ import {
   FireOutlined,
   HeartOutlined,
   PaperClipOutlined,
+  PlusOutlined,
   ReadOutlined,
   ShareAltOutlined,
   SmileOutlined,
+  UserOutlined,
+  BookOutlined,
   SettingOutlined,
+  CloudOutlined,
+  HistoryOutlined,
+  AuditOutlined,
+  AimOutlined,
+  DeploymentUnitOutlined,
+  NodeExpandOutlined,
+  ProfileOutlined
 } from '@ant-design/icons-vue'
-import { Badge, Button, Flex, Space, Typography, theme } from 'ant-design-vue'
+import { Badge, Button, Flex, Space, Typography, theme, Avatar, Watermark, Menu } from 'ant-design-vue'
 import {
   Attachments,
   Bubble,
+  Conversations,
   Prompts,
   Sender,
   useXAgent,
   useXChat,
   Welcome,
+  XStream,
   ThoughtChain
 } from 'ant-design-x-vue'
 import markdownit from 'markdown-it';
 import { computed, h, ref, watch } from 'vue'
-import qa from '../qa.json' // Adjusted path
-import { useRoute } from 'vue-router';
+import qa from '../qa.json'
+import logo from "./assets/icon.png"
 
 const { token } = theme.useToken()
-const route = useRoute();
 
 const styles = computed(() => {
   return {
-    chat: {
-      height: '100%',
-      width: '100%',
-      margin: '0 auto',
-      'box-sizing': 'border-box',
-      display: 'flex',
+    'layout': {
+      'width': '100%',
+      'min-width': '1000px',
+      'overflow': 'hidden',
+      'height': '98vh',  // 修改为100vh以适应窗口高度
+      'max-height': '100vh',
+      'border-radius': `${token.value.borderRadius}px`,
+      'display': 'flex',
+      'background': `${token.value.colorBgContainer}`,
+      'font-family': `AlibabaPuHuiTi, ${token.value.fontFamily}, sans-serif`,
+    },
+    'menu': {
+      'border-right': `1px solid ${token.value.colorBorder}`,
+      'width': '280px',
+      'height': '100%',
+      'display': 'flex',
       'flex-direction': 'column',
-      padding: `${token.value.paddingLG}px`,
-      gap: '16px',
-      'overflow-y': 'hidden', // Ensure chat content itself can scroll if needed, or manage scrolling within Bubble.List
     },
-    messages: {
+    'conversations': {
+      'padding': '0 12px',
+      'flex': 1,
+      'overflow-y': 'hidden',
+    },
+    'content': {
+      'flex': 1,
+      'display': 'flex',
+      'flex-direction': 'column',
+      'overflow-y': 'hidden',
+
+    },
+    'chat': {
+      'height': '100%',
+      'width': '100%',
+      'margin': '0 auto',
+      'box-sizing': 'border-box',
+      'display': 'flex',
+      'flex-direction': 'column',
+      'padding': `${token.value.paddingLG}px`,
+      'gap': '16px',
+      // 隐藏滚动条
+      'overflow-y': 'hidden',
+    },
+    'messages': {
       flex: 1,
-      'overflow-y': 'auto', // Allow messages to scroll
+      'overflow-y': 'auto',
     },
-    placeholder: {
+    'placeholder': {
       'padding-top': '32px',
       'text-align': 'left',
-      flex: 1,
+      'flex': 1,
     },
-    sender: {
+    'sender': {
       'box-shadow': token.value.boxShadow,
+    },
+    'logo': {
+      'display': 'flex',
+      'height': '72px',
+      'align-items': 'center',
+      'justify-content': 'start',
+      'padding': '0 24px',
+      'box-sizing': 'border-box',
+    },
+    'logo-img': {
+      width: '24px',
+      height: '24px',
+      display: 'inline-block',
+    },
+    'logo-span': {
+      'display': 'inline-block',
+      'margin': '0 8px',
+      'font-weight': 'bold',
+      'color': token.value.colorText,
+      'font-size': '16px',
+    },
+    'addBtn': {
+      background: '#1677ff0f',
+      border: '1px solid #1677ff34',
+      width: 'calc(100% - 24px)',
+      margin: '0 12px 24px 12px',
+    },
+    'header': {
+      'display': 'flex',
+      'justify-content': 'space-between',
+      'align-items': 'center',
+      'padding': `0 24px`,
+      'height': '54px',
+      'border-bottom': `1px solid ${token.value.colorBorder}`,
+    },
+    'header-links': {
+      'display': 'flex',
+      'gap': '16px',
+    },
+    'user-info': {
+      'display': 'flex',
+      'align-items': 'center',
+      'gap': '18px',
+    },
+    'ant-bubble-list': {
+      'padding': '0 12px',
+      'flex': 1,
+      'overflow-y': 'hidden',
     },
   } as const
 })
 
-const currentAnswer = ref<Array<{ title?: string; content: string | VNode; description?: string; think?: string }>>([])
+defineOptions({ name: 'PlaygroundIndependentSetup' })
+
+const currentAnswer = ref([])
 
 // random sleep
 const sleep = () => new Promise(resolve => setTimeout(resolve, Math.random() * 1000))
@@ -113,11 +160,42 @@ const sleep = () => new Promise(resolve => setTimeout(resolve, Math.random() * 1
 const getAnswer = (question: string) => {
   const qaList = qa.list
   const qaItem = qaList.find(item => question.includes(item.keywords))
-  return qaItem ? qaItem.answer : []
+
+  if (qaItem) {
+    return qaItem.answer
+  }
 }
 
+const menuItems = ref([
+  {
+    label: '知识库',
+    key: 'new',
+    icon: h(BookOutlined),
+  },
+  {
+    label: '案例库',
+    key: 'case',
+    icon: h(AuditOutlined),
+  },
+
+  {
+    label: '设置',
+    key: 'setting',
+    icon: h(SettingOutlined),
+  },
+  {
+    label: '历史对话',
+    key: 'history',
+    icon: h(HistoryOutlined),
+  },
+])
+
 const md = markdownit()
+// 创建一个渲染markdown内容的函数
 const renderMarkdown: BubbleProps['messageRender'] = (content) => {
+  console.log("renderMarkdown", content);
+   
+  
   return h(Typography, null, {
     default: () => h('div', {
       class: 'markdown-content',
@@ -126,15 +204,21 @@ const renderMarkdown: BubbleProps['messageRender'] = (content) => {
   });
 };
 
+
 function renderTitle(icon: VNode, title: string) {
   return h(Space, { align: 'start' }, () => [icon, h('span', title)])
 }
+
+// --------------
+// | title      |
+// | description|
+// -------------
 
 const renderCard: BubbleProps['messageRender'] = (source) => {
   const items = (Array.isArray(source) ? source : [source])
     .flatMap(item =>
       (item.source || [item])
-        .filter(content => content.title) 
+        .filter(content => content.title) // 过滤有效内容
         .map(content => ({
           label: content.title,
           description: content.description,
@@ -146,10 +230,10 @@ const renderCard: BubbleProps['messageRender'] = (source) => {
   return h(
     Prompts,
     {
-      title: '✨ 参考信息',
-      wrap: true,
-      items: items,
-      styles: {
+     
+      'wrap': true,
+      'items': items,
+      'styles': {
         item: {
           flex: 'none',
           width: 'calc(50% - 6px)',
@@ -159,102 +243,252 @@ const renderCard: BubbleProps['messageRender'] = (source) => {
   );
 };
 
+function renderItem(item: any) {
+  const currentContent = {
+    ...item,
+    // 将source数组提升到顶层以便渲染
+    ...(item.source && { source: item.source })
+  };
+
+  currentAnswer.value = [...currentAnswer.value, currentContent];
+
+  let thinkCharIndex = 0;
+  let contentCharIndex = 0;
+  let isThinking = false;
+
+  const startTypingThink = () => {
+    isThinking = true;
+    const typingThinkId = setInterval(() => {
+      if (thinkCharIndex < item.think.length) {
+        currentContent.think = item.think.slice(0, thinkCharIndex + 1);
+        onUpdate(currentContent.think);
+        thinkCharIndex++;
+      } else {
+        clearInterval(typingThinkId);
+        isThinking = false;
+        startTypingContent();
+      }
+    }, 10);
+  };
+
+  const startTypingContent = () => {
+    const typingContentId = setInterval(() => {
+      if (contentCharIndex < item.content.length) {
+        currentContent.content = item.content.slice(0, contentCharIndex + 1);
+        onUpdate(currentContent.content);
+        contentCharIndex++;
+      } else {
+        clearInterval(typingContentId);
+        processNextItem();
+      }
+    }, 10);
+  };
+
+  if (item.think && item.think.length > 0) {
+    startTypingThink();
+  } else {
+    startTypingContent();
+  }
+
+  // 返回一个包含思考和回答内容的渲染函数
+  return () => {
+    const elements = [];
+    if (item.think && item.think.length > 0) {
+      elements.push(
+        h(ThoughtChain, {
+          title: '模型思考',
+          content: currentContent.think,
+          typing: isThinking,
+          messageRender: renderMarkdown,
+        })
+      );
+    }
+    elements.push(
+      h(Bubble,
+        {
+          variant: 'borderless',
+          style: { 'margin-top': item.think && item.think.length > 0 ? '-24px' : '0px' },
+          typing: !isThinking,
+          content: currentContent.content,
+          messageRender: renderMarkdown,
+        }
+      )
+    );
+    return h(Space, { direction: 'vertical', style: { width: '100%' } }, elements);
+  };
+}
+
+const defaultConversationsItems = [
+  {
+    key: '0',
+    label: 'C园区目前变压器是否正常?',
+  },
+]
+
+const placeholderPromptsItems: PromptsProps['items'] = [
+  {
+    key: '1',
+    label: renderTitle(h(FireOutlined, { style: { color: '#FF4D4F' } }), '现象诊断'),
+    description: '以当前情况描述分析问题',
+    children: [
+      {
+        key: '1-1',
+        description: `电压闪变哪里最严重?`,
+      },
+      {
+        key: '1-2',
+        description: `最近闪变何时发生?`,
+      },
+      {
+        key: '1-3',
+        description: `闪变影响哪些设备?`,
+      },
+    ],
+  },
+  {
+    key: '2',
+    label: renderTitle(h(ReadOutlined, { style: { color: '#1890FF' } }), '数据分析'),
+    description: '对数据进行分析和处理',
+    children: [
+      {
+        key: '2-1',
+        icon: h(HeartOutlined),
+        description: `导出昨日电压曲线`,
+      },
+      {
+        key: '2-2',
+        icon: h(SmileOutlined),
+        description: `对比每周闪变记录`,
+      },
+      {
+        key: '2-3',
+        icon: h(CommentOutlined),
+        description: `生成诊断报告`,
+      },
+    ],
+  },
+  {
+    key: '3',
+    label: renderTitle(h(SettingOutlined, { style: { color: '#52C41A' } }), '解决方案'),
+    description: '提供解决方案',
+    children: [
+      {
+        key: '3-1',
+        icon: h(HeartOutlined),
+        description: `更换变压器`,
+      },
+      {
+        key: '3-2',
+        icon: h(SmileOutlined),
+        description: `联系专业维修人员`,
+      },
+    ],
+  },
+  
+]
+
+
+
+const roles: BubbleListProps['roles'] = {
+  ai: {
+    placement: 'start',
+    typing: { step: 5, interval: 400 },
+    styles: {
+      content: {
+        borderRadius: '16px',
+      },
+    },
+  },
+  local: {
+    placement: 'end',
+    variant: 'shadow',
+  },
+}
 
 // ==================== State ====================
 const headerOpen = ref(false)
 const content = ref('')
+const conversationsItems = ref(defaultConversationsItems)
+const activeKey = ref(defaultConversationsItems[0].key)
 const attachedFiles = ref<AttachmentsProps['items']>([])
 const agentRequestLoading = ref(false)
-const currentProcessIndex = ref(0)
+const autoplay = ref(true) // 新增 autoplay 状态，默认为 true
+const currentProcessIndex = ref(0) // 新增当前流程索引
+const waitingForConfirmation = ref(false) // 新增等待确认状态
+
 
 // ==================== Runtime ====================
 const [agent] = useXAgent({
   request: async ({ message }, { onSuccess, onUpdate }) => {
     agentRequestLoading.value = true
-    currentProcessIndex.value = -1 
-    currentAnswer.value = [] 
+    currentProcessIndex.value = -1 // 重置流程索引
+    currentAnswer.value = [] // 清空之前的答案
+    waitingForConfirmation.value = false // 重置等待确认状态
     await sleep()
 
     const fullAnswer = getAnswer(message)
 
     if (!fullAnswer || fullAnswer.length === 0) {
+      console.log("no answer");
+
       agentRequestLoading.value = false
-      onSuccess('') 
+      onSuccess('') // 或者一个提示没有答案的消息
       return
     }
 
-    const processNextItem = () => {
+    const processNextItem = async () => {
       if (currentProcessIndex.value >= fullAnswer.length - 1) {
         agentRequestLoading.value = false
-        // Pass the structured answer for custom rendering
-        onSuccess(currentAnswer.value as any); 
+        onSuccess(fullAnswer.map(item => item.content).join('\n\n'))
         return
       }
       currentProcessIndex.value++
-      renderItem(fullAnswer[currentProcessIndex.value], onUpdate, processNextItem)
+      
+      // 添加随机延迟（1-3秒）
+      const delay = Math.floor(Math.random() * 2500) + 1000
+      await new Promise(resolve => setTimeout(resolve, delay))
+      
+      renderItem(fullAnswer[currentProcessIndex.value])
     }
 
-    // Pass onUpdate and processNextItem to renderItem
-    renderItem(fullAnswer[currentProcessIndex.value], onUpdate, processNextItem)
+    const renderItem = (item: any) => {
+      const currentContent = {
+        ...item,
+        content: '',
+        loading: true // 新增加载状态
+      }
+      currentAnswer.value = [...currentAnswer.value, currentContent]
+
+      let charIndex = 0
+      const typingId = setInterval(() => {
+        if (charIndex < item.content.length) {
+          currentContent.loading = false // 关闭加载状态
+          currentContent.content = item.content.slice(0, charIndex + 1)
+          onUpdate(currentContent.content)
+          charIndex++
+        } else {
+          clearInterval(typingId)
+          processNextItem()
+        }
+      }, Math.random() * 30 + 50) // 调整打字速度
+    }
+
+    // 初始化时直接触发第一个流程
+    processNextItem()
+
   },
+
 })
 
-const renderItem = (item: any, onUpdate: (chunk: string) => void, processNextItem: () => void) => {
-  const currentContent = {
-    ...item,
-    content: '', // Initialize content as empty for typing effect
-    think: item.think ? '' : undefined // Initialize think as empty if it exists
-  };
-  currentAnswer.value = [...currentAnswer.value, currentContent];
-
-  let thinkCharIndex = 0;
-  let contentCharIndex = 0;
-  let isThinking = !!item.think;
-
-  const typeThink = () => {
-    if (thinkCharIndex < item.think.length) {
-      currentContent.think = item.think.slice(0, thinkCharIndex + 1);
-      // We don't call onUpdate for think, it's rendered via ThoughtChain directly
-      thinkCharIndex++;
-      setTimeout(typeThink, 10);
-    } else {
-      isThinking = false;
-      typeContent();
-    }
-  };
-
-  const typeContent = () => {
-    if (contentCharIndex < item.content.length) {
-      currentContent.content = item.content.slice(0, contentCharIndex + 1);
-      // For the actual message content, we might not need to call onUpdate if Bubble handles typing internally
-      // or if we are constructing the final message structure to be passed to onSuccess.
-      // If onUpdate is for streaming individual characters to the Bubble component, this is correct.
-      onUpdate(currentContent.content); // This might need adjustment based on how Bubble expects updates
-      contentCharIndex++;
-      setTimeout(typeContent, 10); // Adjust typing speed as needed
-    } else {
-      processNextItem();
-    }
-  };
-
-  if (isThinking) {
-    typeThink();
-  } else {
-    typeContent();
-  }
-};
 
 
 const { onRequest, messages, setMessages } = useXChat({
   agent: agent.value,
 })
 
-// Watch for route changes to clear messages for a new chat
-watch(() => route.params.id, (newId, oldId) => {
-  if (newId !== oldId) {
+watch(activeKey, () => {
+  if (activeKey.value !== undefined) {
     setMessages([])
-    currentAnswer.value = [] // Clear previous answers as well
-    // Potentially load conversation history for newId here
   }
 }, { immediate: true })
 
@@ -270,41 +504,24 @@ const onPromptsItemClick: PromptsProps['onItemClick'] = (info) => {
   onRequest(info.data.description as string)
 }
 
+function onAddConversation() {
+  conversationsItems.value = [
+    ...conversationsItems.value,
+    {
+      key: `${conversationsItems.value.length}`,
+      label: `新对话 ${conversationsItems.value.length}`,
+    },
+  ]
+  activeKey.value = `${conversationsItems.value.length}`
+}
+
+const onConversationClick: ConversationsProps['onActiveChange'] = (key) => {
+  activeKey.value = key
+}
+
 const handleFileChange: AttachmentsProps['onChange'] = info => attachedFiles.value = info.fileList
 
 // ==================== Nodes ====================
-const placeholderPromptsItems: PromptsProps['items'] = [
-  {
-    key: '1',
-    label: renderTitle(h(FireOutlined, { style: { color: '#FF4D4F' } }), '现象诊断'),
-    description: '以当前情况描述分析问题',
-    children: [
-      { key: '1-1', description: `电压闪变哪里最严重?` },
-      { key: '1-2', description: `最近闪变何时发生?` },
-      { key: '1-3', description: `闪变影响哪些设备?` },
-    ],
-  },
-  {
-    key: '2',
-    label: renderTitle(h(ReadOutlined, { style: { color: '#1890FF' } }), '数据分析'),
-    description: '对数据进行分析和处理',
-    children: [
-      { key: '2-1', icon: h(HeartOutlined), description: `导出昨日电压曲线` },
-      { key: '2-2', icon: h(SmileOutlined), description: `对比每周闪变记录` },
-      { key: '2-3', icon: h(CommentOutlined), description: `生成诊断报告` },
-    ],
-  },
-  {
-    key: '3',
-    label: renderTitle(h(SettingOutlined, { style: { color: '#52C41A' } }), '解决方案'),
-    description: '提供解决方案',
-    children: [
-      { key: '3-1', icon: h(HeartOutlined), description: `更换变压器` },
-      { key: '3-2', icon: h(SmileOutlined), description: `联系专业维修人员` },
-    ],
-  },
-];
-
 const placeholderNode = computed(() => h(
   Space,
   { direction: "vertical", size: 16, style: styles.value.placeholder },
@@ -324,8 +541,12 @@ const placeholderNode = computed(() => h(
         title: "有什么可以帮到您?",
         items: placeholderPromptsItems,
         styles: {
-          list: { width: '100%' },
-          item: { flex: 1 },
+          list: {
+            width: '100%',
+          },
+          item: {
+            flex: 1,
+          },
         },
         onItemClick: onPromptsItemClick,
       }
@@ -333,78 +554,139 @@ const placeholderNode = computed(() => h(
   ]
 ))
 
-const customRenderMessage = (item: any) => {
-  // Check if item itself is a VNode (placeholder)
-  if (typeof item.content === 'object' && item.content !== null && '__v_isVNode' in item.content) {
-    return item.content;
+const customRender = (item: any) => {
+  if (['information', 'reference', 'action'].includes(item.type)) {
+    return renderCard(item.source)
+  } else {
+    return renderMarkdown(item.content)
   }
-
-  // Handle structured AI responses
-  if (Array.isArray(item.content)) {
-    return h(ThoughtChain, {
-      items: item.content.map((subItem: any) => ({
-        title: subItem.title,
-        content: subItem.type === 'information' || subItem.type === 'reference' ? renderCard(subItem.source) : renderMarkdown(subItem.content),
-        description: subItem.description,
-        think: subItem.think ? renderMarkdown(subItem.think) : undefined,
-        typing: subItem.typingThink // Assuming you add this property during think typing
-      })),
-      // Add other props for ThoughtChain as needed, like messageRender for think content
-      // messageRender: renderMarkdown // If think content also needs markdown rendering
-    });
-  }
-  // Default to markdown rendering for simple string messages
-  return renderMarkdown(item.content);
-};
+}
 
 const items = computed<BubbleListProps['items']>(() => {
+
   if (messages.value.length === 0) {
-    return [{ key: 'placeholder', content: placeholderNode, variant: 'borderless' }]
+    return [{ content: placeholderNode, variant: 'borderless' }]
   }
+
   return messages.value.map(({ id, message, status }) => {
+
     if (status === 'local') {
       return {
         key: id,
         role: status,
         content: message,
+
       }
     } else {
-      // AI message, content is now the structured array from currentAnswer
       return {
         key: id,
-        role: 'ai',
-        // message is the raw response from agent, which is currentAnswer.value
-        // We pass it to a custom renderer that knows how to display ThoughtChain
-        messageRender: () => customRenderMessage({ content: message }) 
+        content: message,
+        messageRender: () => h(ThoughtChain, {
+          items: [
+            ...currentAnswer.value.map((item) => {
+
+              return {
+                title: item.title,
+                content: customRender(item),
+                description: item.description,
+
+
+              }
+            }),
+          ],
+        }),
       }
     }
-  });
+  }
+
+  )
 })
-
-const roles: BubbleListProps['roles'] = {
-  ai: {
-    placement: 'start',
-    styles: {
-      content: {
-        borderRadius: '16px',
-      },
-    },
-  },
-  local: {
-    placement: 'end',
-    variant: 'shadow',
-  },
-}
-
 </script>
 
-<style scoped>
-.markdown-content ::v-deep(p) {
-  margin-bottom: 0.5em;
+<template>
+
+  
+    <div :style="styles.content">
+
+     
+
+    <div :style="styles.chat">
+      <!-- 🌟 顶部导航栏 -->
+      
+      <!-- 🌟 消息列表 -->
+      <Bubble.List :items="items" :roles="roles" :style="styles.messages" :MessageRender="messageRender" />
+
+      <!-- 🌟 提示词 -->
+
+      <!-- 🌟 输入框 -->
+      <Sender :value="content" :style="styles.sender" :loading="agentRequestLoading" @submit="onSubmit"
+        @change="value => content = value">
+        <template #prefix>
+          <Badge :dot="attachedFiles.length > 0 && !headerOpen">
+            <Button type="text" @click="() => headerOpen = !headerOpen">
+              <template #icon>
+                <PaperClipOutlined />
+              </template>
+            </Button>
+          </Badge>
+        </template>
+
+        <template #header>
+          <Sender.Header title="Attachments" :open="headerOpen" :styles="{ content: { padding: 0 } }"
+            @open-change="open => headerOpen = open">
+            <Attachments :before-upload="() => false" :items="attachedFiles" @change="handleFileChange">
+              <template #placeholder="type">
+                <Flex v-if="type && type.type === 'inline'" align="center" justify="center" vertical gap="2">
+                  <Typography.Text style="font-size: 30px; line-height: 1;">
+                    <CloudUploadOutlined />
+                  </Typography.Text>
+                  <Typography.Title :level="5" style="margin: 0; font-size: 14px; line-height: 1.5;">
+                    Upload files
+                  </Typography.Title>
+                  <Typography.Text type="secondary">
+                    Click or drag files to this area to upload
+                  </Typography.Text>
+                </Flex>
+                <Typography.Text v-if="type && type.type === 'drop'">
+                  Drop file here
+                </Typography.Text>
+              </template>
+            </Attachments>
+          </Sender.Header>
+        </template>
+      </Sender>
+    </div>
+    </div>
+
+
+</template>
+
+
+
+<style>
+.markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
 }
-.markdown-content ::v-deep(ul),
-.markdown-content ::v-deep(ol) {
-  padding-left: 20px;
+
+.markdown-content th,
+.markdown-content td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
 }
-/* Add any page-specific styles here */
+
+.markdown-content th {
+  background-color: #f2f2f2;
+}
+
+.markdown-content h2 {
+  font-size: 18px;
+  margin: 1em 0;
+}
+.markdown-content h2 {
+  font-size: 16px;
+  margin: 1em 0;
+}
 </style>
